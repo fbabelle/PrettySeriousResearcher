@@ -1,0 +1,53 @@
+# CI — cross-platform proof for the skill set and its installer.
+# Runs on Linux/macOS/Windows: unit tests, the secrets/abs-path lint, a
+# copy-mode install smoke (clone layout), and a wheel-mode install smoke
+# (the `uvx --from . research-skills` path, which exercises the packaged data).
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Sync env
+        run: uv sync
+
+      - name: Unit tests
+        run: uv run pytest -q
+
+      - name: Skill-set lint (abs paths / secrets)
+        run: uv run python install_skills.py --check-only
+
+      - name: Copy-mode install smoke (clone layout)
+        shell: bash
+        run: |
+          uv run python install_skills.py --target claude --dest "${{ runner.temp }}/proj-copy" --with-scaffold
+          test "$(ls "${{ runner.temp }}/proj-copy/.claude/skills" | wc -l)" -eq 16
+          uv run python install_skills.py --target codex --dest "${{ runner.temp }}/proj-codex" --with-scaffold
+          test "$(ls "${{ runner.temp }}/proj-codex/.agents/skills" | wc -l)" -eq 16
+          test ! -e "${{ runner.temp }}/proj-codex/CLAUDE.md"
+          uv run python -c "import json,os,sys; co=json.load(open(os.path.join(r'${{ runner.temp }}','proj-copy','docs','tracking','cost.json'))); sys.exit(0 if co.get('schema_version')==2 and co['rate_card']['llm'] else 1)"
+
+      - name: Wheel-mode install smoke (uvx from built package)
+        shell: bash
+        run: |
+          uvx --from . research-skills --target claude --dest "${{ runner.temp }}/proj-wheel" --with-scaffold
+          test "$(ls "${{ runner.temp }}/proj-wheel/.claude/skills" | wc -l)" -eq 16
+
+      - name: Plugin manifests are valid JSON
+        shell: bash
+        run: |
+          uv run python -c "import json; json.load(open('.claude-plugin/plugin.json')); json.load(open('.claude-plugin/marketplace.json')); print('plugin manifests OK')"

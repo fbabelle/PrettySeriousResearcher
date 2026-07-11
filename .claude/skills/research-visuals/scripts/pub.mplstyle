@@ -1,0 +1,55 @@
+# pub.mplstyle — single shared publication style for ALL paper figures.
+# Purpose: one source of truth so every chart has the SAME font, sizes, and palette
+# (the fix for cross-figure font/size inconsistency). Load it in every figure script:
+#     import matplotlib.pyplot as plt
+#     plt.style.use("<path>/.claude/skills/research-visuals/scripts/pub.mplstyle")
+# Run figure scripts under uv with a MODERN matplotlib (the 2020 system one is stale).
+# Notes:
+#  - No text.usetex: we use mathtext/STIX so figures build WITHOUT a LaTeX install.
+#  - fonttype 42 embeds TrueType (vector text); avoids the forbidden Type 3 fonts.
+#  - Default palette is Okabe-Ito (colourblind-safe). Default figsize ~ 1 column.
+#  - Set the serif to match your paper's body font; STIX/DejaVu are safe fallbacks.
+
+# --- output: vector-first, fonts embedded ---
+savefig.format:      pdf
+savefig.bbox:        tight
+savefig.dpi:         600
+savefig.transparent: False
+figure.dpi:          200
+pdf.fonttype:        42
+ps.fonttype:         42
+
+# --- size: single-column default (3.5in wide, golden-ratio height) ---
+figure.figsize:      3.5, 2.16
+figure.constrained_layout.use: True
+
+# --- typography: serif body + STIX math, modest sizes ---
+font.family:         serif
+font.serif:          Times New Roman, Times, STIX Two Text, DejaVu Serif
+mathtext.fontset:    stix
+font.size:           9
+axes.titlesize:      9
+axes.labelsize:      9
+xtick.labelsize:     8
+ytick.labelsize:     8
+legend.fontsize:     8
+
+# --- axes: minimal chartjunk, no top/right spines, no grid ---
+axes.linewidth:      0.6
+axes.spines.top:     False
+axes.spines.right:   False
+axes.grid:           False
+axes.axisbelow:      True
+
+# --- colour: Okabe-Ito colourblind-safe cycle ---
+axes.prop_cycle:     cycler('color', ['0072B2','D55E00','009E73','CC79A7','E69F00','56B4E9','F0E442','000000'])
+
+# --- lines/markers/ticks/legend ---
+lines.linewidth:     1.2
+lines.markersize:    4
+xtick.direction:     in
+ytick.direction:     in
+xtick.major.width:   0.6
+ytick.major.width:   0.6
+legend.frameon:      False
+errorbar.capsize:    2.5

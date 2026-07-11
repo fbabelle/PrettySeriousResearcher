@@ -1,0 +1,23 @@
+{
+  "current_phase": "topic-selection",
+  "effort_target_hours": 120,
+  "phase_weights": {
+    "topic-selection": 0.30,
+    "algo-design": 0.20,
+    "experiments": 0.30,
+    "writing": 0.20
+  },
+  "phase_windows": [
+    {
+      "phase": "topic-selection",
+      "start": null,
+      "end": null
+    }
+  ],
+  "gates": {
+    "algo_design_complete": false,
+    "budget_status": "provisional"
+  },
+  "estimated_finish_date": null,
+  "target_submission_date": null
+}

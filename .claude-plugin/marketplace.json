@@ -1,0 +1,16 @@
+{
+  "name": "pretty-serious-researcher",
+  "owner": {
+    "name": "fbabelle"
+  },
+  "metadata": {
+    "description": "Marketplace for the research-paper skill set (Pretty Serious Researcher)."
+  },
+  "plugins": [
+    {
+      "name": "research-paper-skills",
+      "source": "./",
+      "description": "16-skill research-paper pipeline for coding agents: topic → design → experiments → writing → submission, with hard gates against hallucinated citations, fabricated numbers, and budget overruns."
+    }
+  ]
+}
