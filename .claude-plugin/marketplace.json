@@ -10,7 +10,7 @@
     {
       "name": "research-paper-skills",
       "source": "./",
-      "description": "16-skill research-paper pipeline for coding agents: topic → design → experiments → writing → submission, with hard gates against hallucinated citations, fabricated numbers, and budget overruns."
+      "description": "17-skill research-paper pipeline for coding agents: topic → design → experiments → writing → submission, with hard gates against hallucinated citations, fabricated numbers, and budget overruns."
     }
   ]
 }

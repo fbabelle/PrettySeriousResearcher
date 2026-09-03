@@ -1,7 +1,7 @@
 [project]
 name = "pretty-serious-researcher"
-version = "0.2.0"
-description = "A 16-skill research-paper pipeline for coding agents (Claude Code, Cursor, and any SKILL.md-aware tool), with a cross-tool installer."
+version = "0.3.0"
+description = "A 17-skill research-paper pipeline for coding agents (Claude Code, Cursor, and any SKILL.md-aware tool), with a cross-tool installer."
 readme = "README.md"
 license = "Apache-2.0"
 authors = [{ name = "fbabelle" }]

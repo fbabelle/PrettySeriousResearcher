@@ -4,17 +4,17 @@
 
 **Turn your coding agent into a research co-author.**
 
-A 16-skill pipeline that drives a research paper end to end — *topic → design → experiments → writing → submission* — with hard gates against hallucinated citations, fabricated numbers, and budget overruns.
+A 17-skill pipeline that drives a research paper end to end — *topic → design → experiments → writing → submission* — with hard gates against hallucinated citations, fabricated numbers, and budget overruns.
 
 [![CI](https://github.com/fbabelle/PrettySeriousResearcher/actions/workflows/ci.yml/badge.svg)](https://github.com/fbabelle/PrettySeriousResearcher/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white)](https://github.com/fbabelle/PrettySeriousResearcher)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-D22128?logo=apache)](LICENSE)
-[![Skills](https://img.shields.io/badge/skills-16-8A2BE2)](#-the-16-skills)
+[![Skills](https://img.shields.io/badge/skills-17-8A2BE2)](#-the-17-skills)
 [![OS](https://img.shields.io/badge/os-linux%20·%20macos%20·%20windows-444)](#%EF%B8%8F-compatibility)
 
 **Works with:** Claude Code *(verified primary)* · Codex CLI *(verified path)* · Cursor · Windsurf · GitHub Copilot · Gemini CLI · Cline · other compatible `SKILL.md`-aware agents
 
-[Install](#-install) · [How it works](#-how-it-works) · [The gates](#%EF%B8%8F-the-gates-verify-dont-trust) · [The skills](#-the-16-skills) · [Tracking](#%EF%B8%8F-effort--cost-tracking) · [Compatibility](#%EF%B8%8F-compatibility) · [FAQ](#-faq--troubleshooting)
+[Install](#-install) · [How it works](#-how-it-works) · [The gates](#%EF%B8%8F-the-gates-verify-dont-trust) · [The skills](#-the-17-skills) · [Tracking](#%EF%B8%8F-effort--cost-tracking) · [Compatibility](#%EF%B8%8F-compatibility) · [FAQ](#-faq--troubleshooting)
 
 </div>
 
@@ -29,7 +29,7 @@ A 16-skill pipeline that drives a research paper end to end — *topic → desig
 
 ## 🚀 Install
 
-Three channels — pick the one that fits. All are cross-platform (Windows / macOS / Linux) and ship the same 16 skills.
+Three channels — pick the one that fits. All are cross-platform (Windows / macOS / Linux) and ship the same 17 skills.
 
 ### A · Claude Code plugin (zero dependencies)
 
@@ -74,7 +74,7 @@ python install_skills.py --target claude --dest /path/to/your/project --with-sca
 | `--skills-subdir` | override the destination skills subdir if your tool version differs |
 | `--force` | overwrite existing files / bypass a lint refusal |
 
-**What `--with-scaffold` lays down** (only if absent): `docs/tracking/{state.json,cost.json}` (rate-card kept, spend/phases **reset**), an empty `docs/changelogs.md`, a `memory.md` template, `architecture.md`, a project-`README.md` stub, and `.gitignore` entries. A `CLAUDE.md` entry-point pointer is added only for the Claude target. It **never** copies run data (`effort.jsonl`, `effort.md`, `cost.md`) or machine-local config — no project's history or paths leak into another.
+**What `--with-scaffold` lays down** (only if absent): `docs/tracking/{state.json,cost.json}` (rate-card kept, spend/phases **reset**), an empty `docs/changelogs.md`, a `memory.md` template, `architecture.md`, a project-`README.md` stub, a `docs/tracking/skill-evolution-log.md` stub, and `.gitignore` entries (including the skill-evolution state file). For the Claude target it also adds a `CLAUDE.md` entry-point pointer and registers the `research-skill-evolution` hook in `.claude/settings.json` (merged into an existing file; other hooks are kept). It **never** copies run data (`effort.jsonl`, `effort.md`, `cost.md`) or machine-local config — no project's history or paths leak into another.
 
 Every run **lints the skill set first** (absolute paths, emails, tokens, org names) and refuses to copy on a hit. For targets whose discovery path is not verified, the installer prints a "confirm your version reads this path" note, since `SKILL.md` support and locations vary by tool version.
 
@@ -124,7 +124,11 @@ If the results are **null/negative**, the pipeline does not force a win — you 
 | 🧑‍⚖️ Review | `research-mock-review` | Submitting blind: an adversarial multi-model panel scores the draft against the venue's rubric and pre-drafts rebuttals. **Never auto-decides.** |
 | 💰 Budget | `research-tracking` | Entering experiments without a finalized spend cap; conflating subscription cost with metered API spend. |
 
-## 🧰 The 16 skills
+## 🧬 Skill evolution (Claude Code)
+
+The skills improve from use. `research-skill-evolution` is fired by a hook — `UserPromptSubmit` every 10 prompts, or the first prompt after `PreCompact` — and reviews **only the increment** since its last pass (the conversation plus the `git diff` of docs/drafts/src), distilling lessons that are *general* (would help the next paper) and *earned* (a failure, a reversal, a verified surprise, explicit process feedback) into small targeted edits of the skill files, with a log of what was applied and what was rejected. `--with-scaffold` registers the hook for the Claude target; other hosts run the skill by hand. Evolution edits flow back here by PR, so every paper project sharpens the shared set.
+
+## 🧰 The 17 skills
 
 | Skill | Role |
 |---|---|
@@ -144,6 +148,7 @@ If the results are **null/negative**, the pipeline does not force a win — you 
 | `research-reflection` | 🪞 Periodic adversarial self-check with an anti-tilt principle (no change-for-its-own-sake). |
 | `research-code-review` | ✅ 4-step design judgment + test discipline after any research code. |
 | `research-repo-hygiene` | 📁 Standing conventions: layout, changelog, draft rotation, commit rules. |
+| `research-skill-evolution` | 🧬 Hook-triggered incremental self-improvement: distill earned lessons from the increment into logged skill edits; sync upstream. |
 
 ## ⏱️ Effort & cost tracking
 
@@ -187,7 +192,7 @@ Cost keeps lineages apart: coding-agent billing is detected per plan (flat plans
 
 ```text
 your-paper/
-├── .claude/skills/          # the 16 skills (installed, read-only — fix upstream, reinstall)
+├── .claude/skills/          # the 17 skills (installed; edited only by research-skill-evolution passes, synced upstream)
 ├── docs/
 │   ├── plans/               # timestamped plan backups
 │   ├── changelogs.md        # append-only change log
@@ -244,13 +249,13 @@ A plugin install loads the skills from Claude Code's plugin cache — great for 
 <details>
 <summary><b>Skills are installed but the agent edited them — is that OK?</b></summary>
 
-No — installed skills are **read-only by convention**. The set is authored and maintained in this source repo; a paper project that edits its installed copy diverges and gets clobbered on the next reinstall. Fix upstream here, then reinstall (`research-repo-hygiene` encodes this rule).
+Ad-hoc edits, no — the set is authored and maintained in this source repo, and a paper project that hand-edits its installed copy diverges and gets clobbered on the next reinstall. The one sanctioned path is `research-skill-evolution`: a hook-triggered pass (every 10 prompts, or when context is nearly exhausted) that distills *earned* methodology lessons from the increment since the last pass into small, logged skill edits (`docs/tracking/skill-evolution-log.md`), committed as one feature commit. Those edits must then flow **upstream** as a PR here — the contract tests and secrets lint gate them — or the next reinstall discards them (`research-repo-hygiene` encodes both rules).
 
 </details>
 
 ## 🤝 Contributing
 
-Improvements flow **upstream-first**: fix or extend a skill *here*, run the checks, then reinstall into your paper projects.
+Improvements flow **upstream-first**: fix or extend a skill *here*, run the checks, then reinstall into your paper projects. Evolution passes made inside a paper project arrive the same way — a PR of the diffed skill files, project-specific residue stripped.
 
 ```bash
 uv sync                                      # dev env (Python 3.12 via uv)
