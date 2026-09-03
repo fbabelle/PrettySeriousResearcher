@@ -1,6 +1,6 @@
 {
   "name": "research-paper-skills",
-  "description": "A 16-skill research-paper pipeline: topic selection, algorithm design, experiments, writing, and submission — with effort/cost tracking, anti-hallucination citation and provenance gates, publication-quality visuals, and a pre-submission reviewer panel.",
+  "description": "A 17-skill research-paper pipeline: topic selection, algorithm design, experiments, writing, and submission — with effort/cost tracking, anti-hallucination citation and provenance gates, publication-quality visuals, and a pre-submission reviewer panel.",
   "author": {
     "name": "fbabelle"
   },

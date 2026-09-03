@@ -14,7 +14,7 @@ LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 class SkillContracts(unittest.TestCase):
     def test_skill_frontmatter_and_size(self):
         skill_files = sorted(SKILLS.glob("*/SKILL.md"))
-        self.assertEqual(len(skill_files), 16)
+        self.assertEqual(len(skill_files), 17)
         for path in skill_files:
             text = path.read_text(encoding="utf-8")
             lines = text.splitlines()

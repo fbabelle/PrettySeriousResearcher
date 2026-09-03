@@ -10,6 +10,10 @@ Before copying anything it LINTS the skill set for absolute paths and secret/PII
 patterns and refuses on a hit (override with --force) — so a shared bundle can't
 leak one machine's paths or one org's secrets.
 
+For the Claude target, --with-scaffold also registers the research-skill-evolution
+hook in .claude/settings.json (merged into an existing file; other hooks are kept) and
+git-ignores its state file — the skills then improve from use, one logged pass at a time.
+
 Usage (from a clone):
   python install_skills.py --target claude --dest /path/to/project
   python install_skills.py --target cursor --dest . --with-scaffold
@@ -242,7 +246,8 @@ point. It routes to the phase skills (research-topic-selection, research-algo-de
 research-experiments, research-writing) and the cross-cutting gates (research-tracking,
 research-code-review, research-references, research-provenance, research-finance-rigor,
 research-visuals, research-venue-selection, research-mock-review, research-submission,
-research-reflection, research-repo-hygiene).
+research-reflection, research-repo-hygiene) and the evolution channel
+(research-skill-evolution, hook-triggered).
 Track effort/cost with `python .claude/skills/research-tracking/scripts/track.py`.
 {CLAUDE_MD_END}
 """
@@ -265,6 +270,48 @@ def ensure_claude_md(dest: Path, force: bool):
     else:
         p.write_text(CLAUDE_MD_BLOCK, encoding="utf-8")
         print("  scaffold: wrote CLAUDE.md (research-paper entry-point pointer)")
+
+
+HOOK_COMMAND = "python .claude/skills/research-skill-evolution/scripts/skill_update_trigger.py"
+HOOK_EVENTS = {"UserPromptSubmit": "skill-evolution round counter",
+               "PreCompact": "skill-evolution usage flag"}
+
+
+def ensure_hook_settings(dest: Path):
+    """Register the research-skill-evolution hook in .claude/settings.json (idempotent).
+    Merges into an existing file — other hooks and settings are kept; a file that is
+    not valid JSON is left untouched with a note (the snippet lives in the hook's
+    docstring). Claude Code only: other hosts have no hook mechanism."""
+    p = dest / ".claude" / "settings.json"
+    settings: dict = {}
+    if p.exists():
+        try:
+            settings = json.loads(p.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            print("  scaffold: .claude/settings.json is not valid JSON — register the "
+                  "skill-evolution hook by hand (snippet in the hook's docstring)")
+            return
+        if not isinstance(settings, dict):
+            print("  scaffold: .claude/settings.json is not a JSON object — hook not registered")
+            return
+    hooks = settings.setdefault("hooks", {})
+    added = 0
+    for event, label in HOOK_EVENTS.items():
+        entries = hooks.setdefault(event, [])
+        present = any(h.get("command") == HOOK_COMMAND
+                      for e in entries if isinstance(e, dict)
+                      for h in e.get("hooks", []) if isinstance(h, dict))
+        if present:
+            continue
+        entries.append({"hooks": [{"type": "command", "command": HOOK_COMMAND,
+                                   "timeout": 15, "statusMessage": label}]})
+        added += 1
+    if not added:
+        print("  scaffold: skill-evolution hook already registered in .claude/settings.json")
+        return
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(settings, indent=2) + "\n", encoding="utf-8")
+    print(f"  scaffold: registered the skill-evolution hook in .claude/settings.json ({added} event(s))")
 
 
 def scaffold(dest: Path, force: bool, target: str, tracking_command: str):
@@ -303,11 +350,16 @@ def scaffold(dest: Path, force: bool, target: str, tracking_command: str):
                     f"and, where supported, agent effort with `{tracking_command}`.\n\n"
                     "_This is the per-project quickstart. The skill set's own documentation lives with the skill set, not here._\n",
                     force, "README.md (project quickstart stub)")
+    write_if_absent(tdir / "skill-evolution-log.md",
+                    "# Skill-evolution log\n\nOne entry per research-skill-evolution pass: trigger, increment, "
+                    "lessons applied, lessons rejected (with reasons).\n",
+                    force, "docs/tracking/skill-evolution-log.md")
     if target == "claude":
         ensure_claude_md(dest, force)
+        ensure_hook_settings(dest)
     gi = dest / ".gitignore"
-    needed = ["memory.md", "docs/tracking/.session", "drafts/_archive/",
-              ".claude/settings.local.json", ".venv/", "__pycache__/", "data/"]
+    needed = ["memory.md", "docs/tracking/.session", "docs/tracking/.skill-evolution-state.json",
+              "drafts/_archive/", ".claude/settings.local.json", ".venv/", "__pycache__/", "data/"]
     existing = gi.read_text("utf-8") if gi.exists() else ""
     add = [e for e in needed if e not in existing]
     if add:
@@ -436,6 +488,9 @@ def main() -> int:
         else:
             print("  4. The scaffolded CLAUDE.md makes Claude route paper work to research-paper proactively.")
         print('  5. Then just say e.g. "let\'s work on the paper" — research-paper triggers on the match.')
+        if args.with_scaffold:
+            print("  6. Skill evolution is armed: the hook in .claude/settings.json fires research-skill-evolution")
+            print("     every 10 prompts; its edits are logged in docs/tracking/skill-evolution-log.md — sync them upstream.")
     else:
         print(f"  1. Confirm your '{args.target}' agent reads skills from {where} (restart it if needed).")
         print("  2. Use the 'research-paper' skill as the entry point for paper work.")

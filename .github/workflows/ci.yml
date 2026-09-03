@@ -35,9 +35,9 @@ jobs:
         shell: bash
         run: |
           uv run python install_skills.py --target claude --dest "${{ runner.temp }}/proj-copy" --with-scaffold
-          test "$(ls "${{ runner.temp }}/proj-copy/.claude/skills" | wc -l)" -eq 16
+          test "$(ls "${{ runner.temp }}/proj-copy/.claude/skills" | wc -l)" -eq 17
           uv run python install_skills.py --target codex --dest "${{ runner.temp }}/proj-codex" --with-scaffold
-          test "$(ls "${{ runner.temp }}/proj-codex/.agents/skills" | wc -l)" -eq 16
+          test "$(ls "${{ runner.temp }}/proj-codex/.agents/skills" | wc -l)" -eq 17
           test ! -e "${{ runner.temp }}/proj-codex/CLAUDE.md"
           uv run python -c "import json,os,sys; co=json.load(open(os.path.join(r'${{ runner.temp }}','proj-copy','docs','tracking','cost.json'))); sys.exit(0 if co.get('schema_version')==2 and co['rate_card']['llm'] else 1)"
 
@@ -45,7 +45,7 @@ jobs:
         shell: bash
         run: |
           uvx --from . research-skills --target claude --dest "${{ runner.temp }}/proj-wheel" --with-scaffold
-          test "$(ls "${{ runner.temp }}/proj-wheel/.claude/skills" | wc -l)" -eq 16
+          test "$(ls "${{ runner.temp }}/proj-wheel/.claude/skills" | wc -l)" -eq 17
 
       - name: Plugin manifests are valid JSON
         shell: bash

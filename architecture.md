@@ -37,6 +37,7 @@ cross-cutting: research-tracking (effort+cost ledgers, two time clocks, budget p
                research-submission (post-packet tail: submission execution, evidence-mapped responses, camera-ready, release)
                research-reflection (periodic multi-CLI adversarial self-check; loop-back target)
                research-repo-hygiene (standing conventions)
+               research-skill-evolution (hook-triggered incremental self-improvement of the set: logged passes, synced upstream by PR)
 ```
 
 ### Hard-stop checkpoints (each a ranked-options → confirm handshake, not a self-cleared checklist)

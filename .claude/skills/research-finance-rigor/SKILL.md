@@ -23,6 +23,8 @@ Data is the binding constraint in AI×finance, so confirm it **up front** (a dea
 - **Point-in-time, not restated** — features must reflect what was knowable at the time; restated fundamentals are look-ahead.
 - **Survivorship & selection** — delisted/dead names must be in the universe; a survivors-only backtest is biased upward.
 - **Provenance trail** — record vendor, snapshot date, and point-in-time handling so results are checkable (feeds the appendix reproducibility statement).
+- **Ready-made bundles are not data** — a framework's downloadable market bundle must be checked for currency, provenance and status (crawler source, end date, "disabled" notices, open issues on adjustments) before it enters the pipeline; several end years before the evaluation window. Price the vendor tiers from their own pages (points/tier thresholds, per-interface minimums, call caps, ToS on redistribution) — the tier that unlocks adjustment factors, delisted lists and index weights is usually cheap, the free tier usually isn't enough.
+- **Point-in-time index membership is the hard requirement** — no free source gives it directly. Triangulate: a snapshot-by-date API looped daily/weekly, the index provider's official announcements for effective dates, and vendor monthly weights, merged into a `(code, start, end)` interval table; smoke-test that delisted names keep their price history; use a *fixed-anchor* price adjustment (a vendor's forward-adjusted series anchored on a later date is look-ahead).
 
 This is the **positive replacement** for the one-line public-dataset auto-loaders the ML autonomous-science systems use — finance data rarely lives on a public hub and never loads leakage-safe by default.
 
