@@ -17,6 +17,7 @@ The goal is a *correct* answer about whether to change course — **not** to man
 - Roughly every **~15 agent-active hours** within a long phase.
 - **On a surprising event, not only on cadence** — a strong prior-art hit that threatens novelty, a competitor that appears dead/alive, a failed or too-good-to-be-true result. These are the moments a scoped reflection pays off most.
 - On an **algo-design solvability-gate failure** (revisit the framing/topic before spending the experiments budget).
+- **At the end of each run batch (a stage)**, as a *path re-evaluation* against the pre-registered hypotheses: an inventory of every run with its artefact pointer and one-line verdict; a reading per hypothesis (supported / bounded / pending); a settings table that says what each interval and level means; the loopholes and analysis gaps found; and a re-ordered path that runs the cheapest framing-deciding experiment before the most expensive block. Written for the owner in the project's teaching register (every number pointed to its artefact and to where it was derived), filed under `docs/reflections/`, and mirrored in a claims ledger so writing never starts from memory.
 - **Before submission** — a fresh adversarial read of the whole argument.
 
 The orchestrator opens it with a **targeted question**, e.g. *"While the experiments run, want me to revisit and pressure-test the algorithm design and confirm it's still the optimal approach?"* Act only once the user confirms the scope.

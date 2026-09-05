@@ -96,6 +96,8 @@ Readability essentials regardless of template: a clear numbered section hierarch
 - **Ethics / broader impact** — verify the exact cycle policy instead of assuming a universal section. Requirements differ: some venues require an impact statement, some require Limitations, and some make an ethics section conditional or optional. For AI×finance, address dual use, market impact, fairness, privacy, and regulatory considerations where relevant; follow the confirmed venue profile.
 - **Conclusion** — what changed in the field's understanding, and the concrete next step.
 
+**A measurement environment corrected mid-project is ONE environment in the paper.** Describe the corrected ruler as *the* environment; disclose the correction in one sentence in the methods (what was wrong, that it was fixed before the reported runs); put the pre-amendment runs in an appendix table, including any per-member sign flips. Version labels (v1/v2, "registered" vs "corrected") in the main text confuse the reader and invite the question the appendix already answers. Precondition: the two rulers agree in direction; if they do not, the disagreement *is* the result and stays in the main text. Ledgers, verdicts and run reports keep both sets of numbers; only the prose merges (owner decision 2026-09-05).
+
 ## Figures & tables
 
 **Build, fix, and audit every visual via `research-visuals`** — it owns the per-type tool choice (booktabs tables, matplotlib/TikZ charts, Graphviz/TikZ diagrams, algorithm2e pseudocode), the single shared style, and the quality audit (font consistency, vector, colourblind-safe, no baked-in chrome). The reminders below are the writing-side essentials:
