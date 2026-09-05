@@ -37,6 +37,10 @@ A result must survive all of these before it's believed or reported:
 - **After-cost, co-primary metrics** — report **turnover, transaction costs, slippage, capacity, and drawdown** alongside (not after) the headline Sharpe/return. An alpha that dies under realistic costs is not a result.
 - **Dependence-aware uncertainty** — report effect sizes with intervals across independent seeds/periods and use block bootstrap, HAC, cluster, or another design-appropriate method for serial/cross-sectional dependence; never treat rows or overlapping windows as independent.
 
+## 2b) Ground truth does not exist on real data — define the realised label and say so
+
+A synthetic study labels candidates true/false by construction; real data cannot. Replace the label with a *realised*, ex-post, referee-independent rule fixed before the run (e.g. mean post-submission edge over the remaining horizon ≥ the economic threshold, minimum window stated), disclose that late candidates carry short windows, and make the after-cost book statistic — not the label — the primary real-data metric. Re-derive the economic threshold from measured turnover, cost and return-per-unit-signal rather than copying a synthetic value, and if the registered value survives the check, keep it and publish the check (earned 2026-09-05: break-even IC ranged 0.004–0.03 across families; the registered δ stayed, disclosed as above break-even for three families and below for one).
+
 ## 3) Leakage-safe backtest infrastructure (don't reinvent it)
 
 Prefer maintained execution/evaluation frameworks over a hand-rolled backtest when they fit: **qlib**, **FinRL / FinRL-Meta**, **backtrader**, **vectorbt**. These are engines, not leakage guarantees; audit data vintages, universe construction, splits, execution timing, costs, and defaults for every framework. For QA/reasoning-style finance-LLM work, anchor to public benchmarks — **FinQA, ConvFinQA, TAT-QA** — with a named-baseline comparison, not a bespoke metric.
