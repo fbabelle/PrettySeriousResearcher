@@ -51,6 +51,10 @@ When the paper's object is the *process* around factors (a referee, a controller
 
 Rebalance on the calendar a desk uses (daily; first open of the ISO week; first open of the month) and measure forecast horizons over those same windows — from the close before one rebalance day to the close before the next. A fixed count of 5 or 21 trading days drifts away from real execution points over years, and fundamentals arrive on the calendar (reporting deadlines; staleness caps in calendar days). Report evidence per year (IC/sd · √windows) per calendar rather than mean IC alone: slow signals gain IC per window and lose windows (earned 2026-09-07).
 
+## 2e) Multi-factor books aggregate positions, not signals
+
+Averaging rank signals across styles and sorting once builds a composite that is nobody's factor: where styles disagree on a stock the signal cancels and the stock drops out, and each style's edge is diluted before it can be measured — weighting the signals by IC does not change that. Build each factor's own long/short book (its style intact), add the books with equal notional per factor, re-normalise at every rebalance (the factor count changes), and let disagreements net at the position level; record per-family sleeve returns so attribution is possible. Add the ex-ante controls a desk would use — a turnover cap per rebalance and an index beta hedge from rolling betas — and report beta measured, not assumed (owner correction 2026-09-07).
+
 ## 3) Leakage-safe backtest infrastructure (don't reinvent it)
 
 Prefer maintained execution/evaluation frameworks over a hand-rolled backtest when they fit: **qlib**, **FinRL / FinRL-Meta**, **backtrader**, **vectorbt**. These are engines, not leakage guarantees; audit data vintages, universe construction, splits, execution timing, costs, and defaults for every framework. For QA/reasoning-style finance-LLM work, anchor to public benchmarks — **FinQA, ConvFinQA, TAT-QA** — with a named-baseline comparison, not a bespoke metric.
