@@ -47,6 +47,10 @@ When the paper's object is the *process* around factors (a referee, a controller
 
 **One economic threshold across classes with 10x turnover differences penalises slow signals.** A cost-based threshold derived for a fast class (reversal, turnover ≈ 0.4/day) is 5x the break-even of a slow class (fundamentals, ≈ 0.06/day). Do not answer with a slower scoring clock — evidence per year (IC/sd · √obs) falls with the horizon for every class measured — answer with a per-class break-even table and a threshold slice (free baselines at two thresholds and two holding periods), and disclose that a realised label defined through the threshold relabels as it re-admits.
 
+## 2d) Execution and prediction windows follow the trading calendar
+
+Rebalance on the calendar a desk uses (daily; first open of the ISO week; first open of the month) and measure forecast horizons over those same windows — from the close before one rebalance day to the close before the next. A fixed count of 5 or 21 trading days drifts away from real execution points over years, and fundamentals arrive on the calendar (reporting deadlines; staleness caps in calendar days). Report evidence per year (IC/sd · √windows) per calendar rather than mean IC alone: slow signals gain IC per window and lose windows (earned 2026-09-07).
+
 ## 3) Leakage-safe backtest infrastructure (don't reinvent it)
 
 Prefer maintained execution/evaluation frameworks over a hand-rolled backtest when they fit: **qlib**, **FinRL / FinRL-Meta**, **backtrader**, **vectorbt**. These are engines, not leakage guarantees; audit data vintages, universe construction, splits, execution timing, costs, and defaults for every framework. For QA/reasoning-style finance-LLM work, anchor to public benchmarks — **FinQA, ConvFinQA, TAT-QA** — with a named-baseline comparison, not a bespoke metric.
