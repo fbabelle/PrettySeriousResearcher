@@ -114,6 +114,8 @@ Readability essentials regardless of template: a clear numbered section hierarch
 
 ## Companion / teaching docs (explanation-grade material)
 
+**An explanation the owner did not follow twice in conversation becomes a worked subsection of the zero-background companion report, not a third chat attempt** (2026-09-11). Write it as a numbered investigation — the puzzle, the first guess and why it had to be tested, the instrument and its self-check, a table of what each counterfactual removes, the result read column by column, the mechanism with one analogy each, a "where readers get stuck" box, and what changes and does not change — with every number's source file. The report is the durable answer; chat is not.
+
 When the user asks for explanatory material about the method (a tutorial, lecture notes, a methodology walkthrough for their own study), it is a different genre from the manuscript, and revision rounds are predictable: readers escalate along the same four axes every time. Build them in on the first pass instead of waiting for the feedback loop:
 1. **Derivations unpacked** — every theorem proved in named steps from a stated toolbox of prerequisites, each inequality justified in place (a manuscript-compact proof is "too dense" for a learning reader by default).
 2. **Concept-level differentiation** — each key concept compared against its nearest siblings (what it beats, what it costs, where the tax lives); a bare definition doesn't let the reader see why *this* tool.
