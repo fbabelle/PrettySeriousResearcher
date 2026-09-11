@@ -96,6 +96,8 @@ Readability essentials regardless of template: a clear numbered section hierarch
 - **Ethics / broader impact** — verify the exact cycle policy instead of assuming a universal section. Requirements differ: some venues require an impact statement, some require Limitations, and some make an ethics section conditional or optional. For AI×finance, address dual use, market impact, fairness, privacy, and regulatory considerations where relevant; follow the confirmed venue profile.
 - **Conclusion** — what changed in the field's understanding, and the concrete next step.
 
+**A measurement environment corrected mid-project is ONE environment in the paper.** Describe the corrected ruler as *the* environment; disclose the correction in one sentence in the methods (what was wrong, that it was fixed before the reported runs); put the pre-amendment runs in an appendix table, including any per-member sign flips. Version labels (v1/v2, "registered" vs "corrected") in the main text confuse the reader and invite the question the appendix already answers. Precondition: the two rulers agree in direction; if they do not, the disagreement *is* the result and stays in the main text. Ledgers, verdicts and run reports keep both sets of numbers; only the prose merges (owner decision 2026-09-05).
+
 ## Figures & tables
 
 **Build, fix, and audit every visual via `research-visuals`** — it owns the per-type tool choice (booktabs tables, matplotlib/TikZ charts, Graphviz/TikZ diagrams, algorithm2e pseudocode), the single shared style, and the quality audit (font consistency, vector, colourblind-safe, no baked-in chrome). The reminders below are the writing-side essentials:
@@ -111,6 +113,8 @@ Readability essentials regardless of template: a clear numbered section hierarch
 - **Appendix:** full hyperparameters, dataset details and licensing, extra ablations, proofs, and a **reproducibility statement** (seeds, environment, data access, compute). Finance: state data vendor, point-in-time handling, and cost assumptions so results are checkable. Include an **AI-involvement disclosure** (which stages were AI-driven vs human-steered) — increasingly expected on arXiv/venue submissions and cheap to generate from the tracking record; keep it a short honest statement, not a heavyweight per-step ledger.
 
 ## Companion / teaching docs (explanation-grade material)
+
+**An explanation the owner did not follow twice in conversation becomes a worked subsection of the zero-background companion report, not a third chat attempt** (2026-09-11). Write it as a numbered investigation — the puzzle, the first guess and why it had to be tested, the instrument and its self-check, a table of what each counterfactual removes, the result read column by column, the mechanism with one analogy each, a "where readers get stuck" box, and what changes and does not change — with every number's source file. The report is the durable answer; chat is not.
 
 When the user asks for explanatory material about the method (a tutorial, lecture notes, a methodology walkthrough for their own study), it is a different genre from the manuscript, and revision rounds are predictable: readers escalate along the same four axes every time. Build them in on the first pass instead of waiting for the feedback loop:
 1. **Derivations unpacked** — every theorem proved in named steps from a stated toolbox of prerequisites, each inequality justified in place (a manuscript-compact proof is "too dense" for a learning reader by default).
