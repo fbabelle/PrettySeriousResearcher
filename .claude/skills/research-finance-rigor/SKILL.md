@@ -49,6 +49,8 @@ When the paper's object is the *process* around factors (a referee, a controller
 
 ## 2d) Execution and prediction windows follow the trading calendar
 
+**A factor's prediction horizon is part of its identity, and every instrument must use it.** A library that mixes 1--5-day reversal with 1--3-month momentum and fundamentals cannot be certified with one daily statistic, priced with one break-even threshold, and traded on one monthly calendar: each choice silently re-labels every factor as a one-horizon factor, and the three choices need not even agree with each other. Declare the horizon per family in the library (it usually already sits in the profile the agent is shown), score the certificate on the factor's own held-signal outcome at that horizon, derive the break-even threshold from that family's turnover, and let each sleeve rebalance on its own calendar. A one-size threshold across families with 10x turnover differences is a defect to fix, not a disclosure to make (owner correction 2026-09-12, after two analyses had rationalised the mismatch).
+
 Rebalance on the calendar a desk uses (daily; first open of the ISO week; first open of the month) and measure forecast horizons over those same windows — from the close before one rebalance day to the close before the next. A fixed count of 5 or 21 trading days drifts away from real execution points over years, and fundamentals arrive on the calendar (reporting deadlines; staleness caps in calendar days). Report evidence per year (IC/sd · √windows) per calendar rather than mean IC alone: slow signals gain IC per window and lose windows (earned 2026-09-07).
 
 ## 2e) Multi-factor books aggregate positions, not signals
