@@ -11,6 +11,8 @@ LLM-authored papers invent plausible-looking **numbers** the same way they inven
 
 *A number, table cell, or figure that cannot be traced to a logged artifact in `runs/` does not go in the paper.* Every reported value must resolve to a run keyed by config-hash → metric (the instrumented output `research-experiments` writes). Placeholders, hand-typed values, and hand-edited figures are defects, not results.
 
+**No artefact, no number — and an auditor's prose is not an artefact.** A statistic that a human or a subagent computed ad hoc while checking the draft must be written by a script into a run report before it enters the text; otherwise the draft inherits whatever the auditor happened to look at. The specific way this fails: a campaign-level or book-level statistic is quoted from the one seed the auditor opened, and the draft says "the book" where the artefact says "seed 0". A campaign statistic is always the multi-seed value with its seed range, and the check scripts that produce it live in the repo (earned 2026-09-15: several headline numbers traced only to an audit's prose; four check scripts had to be written to create the artefacts they should have come from).
+
 ## When it fires
 
 - **At results-capture (Phase 3)** — as `research-experiments` persists outputs, reconcile each headline number to its producing run so provenance is captured while the run context is fresh.
@@ -19,7 +21,7 @@ LLM-authored papers invent plausible-looking **numbers** the same way they inven
 
 ## The protocol
 
-1. **Enumerate every reported quantity** in the draft (abstract stats, table cells, figure data, in-text numbers).
+1. **Enumerate every reported quantity** in the draft (abstract stats, table cells, figure data, in-text numbers) — **including direction words**. A sentence that states a direction ("ahead/behind", "above/below", "narrows/widens") carries a sign that must be re-derived from the artefact table at writing time and again at the sweep; a check that matches numbers only will pass a sentence whose direction is inverted (earned 2026-09-15: one such sentence survived several provenance passes with every number in it correct).
 2. **Resolve each to an artifact** — the `runs/` record (config-hash, seed, metric) that produced it. Regenerate figures from `runs/` via the `research-visuals` figures-as-code pipeline so a figure *is* its artifact, not a pasted bitmap.
 3. **Assign a verdict:** RESOLVED (traces cleanly), STALE (artifact exists but predates the current config — rerun), or **UNRESOLVED** (no artifact / placeholder / hand-edited → **must fix or remove**).
 4. **Surface only the exceptions.** Emit a reconciliation table, but only STALE/UNRESOLVED rows need the user's attention — so the user never hunts the whole draft for a fabricated number (that diagnosis is done for them).
@@ -42,7 +44,17 @@ Don't wait for the Phase-4 sweep — maintain a **claims ledger** (`docs/claims-
 ID | § | Claim (one line) | Evidence (file/table/fig + cell) | n / seeds | Caveat | Status
 ```
 
+A measured result the owner decides *not* to put in the paper keeps its row with the status **internal check, not a paper item** — the evidence stays reproducible and the decision stays visible, and nobody re-litigates it next month (2026-09-12).
+
 Rules, proven in production: **no orphan claims** (a claim without an evidence row doesn't ship) and **no orphan evidence** (a table/figure no claim uses gets cut); every row carries its sample size/seed count and the honest caveat ("live only", "benign 1-yr regime"); `Status` stays `draft` until the number is regenerated from current data and reconciled, then flips to `verified`. The Phase-4 sweep then reduces to auditing the ledger instead of rediscovering the draft, and `research-mock-review` consumes it directly.
+
+## A constant quoted in the theory is a derived number with provenance
+
+Thresholds and conversion factors that the method section *derives* (a break-even, a scaling constant, a calibration) are results, not definitions: they belong in the ledger with the artefact that measures them, and they must be recomputed — and the arithmetic re-done — whenever that measurement changes. Two independent failures in one line of this project: the theory carried the superseded estimate of a conversion rate long after a better measurement existed, *and* the formula that turned it into per-family thresholds had a wrong coefficient, so every quoted threshold was too low and nobody noticed because the numbers were internally consistent with each other. The check that catches both is to re-derive the constant from the measurement it summarises by a second route (here: break-even = IC x cost / gross, read straight off the cost curve) and require the two to agree to a stated tolerance (2026-09-14).
+
+## A design change silently re-aims the existing reports
+
+When the construction under measurement changes (a shared schedule becomes per-unit, a pooled book becomes per-unit books), walk every derived series and ask *what days / units does this actually sample now*. A per-family attribution that recorded returns on rebalance days was interpretable while every unit rebalanced together; once each unit had its own calendar the same code sampled only that family's formation days and every number turned negative — a reading that would have gone into the paper as a finding. The signature is a table that suddenly disagrees with a quantity you trust (here the ledger, accrued every held day). Suppress or re-derive the affected section, say in the report why, and prefer the series with the denominator you can state in one sentence (2026-09-13).
 
 ## Make provenance executable where you can
 
