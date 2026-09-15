@@ -16,12 +16,14 @@ Project root: $CLAUDE_PROJECT_DIR when set (Claude Code exports it to hooks); ot
         and from a project-level `.claude/hooks/` copy.
 Config: SKILL_EVOLUTION_INTERVAL env var overrides the 10-prompt cadence (tests use it).
 
-Register in .claude/settings.json (install_skills.py --with-scaffold writes/merges this):
+Register in .claude/settings.json (install_skills.py --with-scaffold writes/merges this). The command must
+resolve this file from $CLAUDE_PROJECT_DIR, not from the shell's cwd (a relative path blocks every prompt of a
+session whose shell has cd-ed out of the repo, 2026-09-16); the shell-agnostic form:
     {"hooks": {
-      "UserPromptSubmit": [{"hooks": [{"type": "command", "timeout": 15,
-        "command": "python .claude/skills/research-skill-evolution/scripts/skill_update_trigger.py"}]}],
-      "PreCompact":       [{"hooks": [{"type": "command", "timeout": 15,
-        "command": "python .claude/skills/research-skill-evolution/scripts/skill_update_trigger.py"}]}]}}
+      "UserPromptSubmit": [{"hooks": [{"type": "command", "timeout": 15, "command": HOOK_CMD}]}],
+      "PreCompact":       [{"hooks": [{"type": "command", "timeout": 15, "command": HOOK_CMD}]}]}}
+    HOOK_CMD = python -c "import os,runpy;runpy.run_path(os.path.join(os.environ.get('CLAUDE_PROJECT_DIR','.'),
+               '.claude/skills/research-skill-evolution/scripts/skill_update_trigger.py'),run_name='__main__')"
 
 Usage (manual test):
     echo '{"hook_event_name":"UserPromptSubmit"}' | python .claude/skills/research-skill-evolution/scripts/skill_update_trigger.py

@@ -272,7 +272,9 @@ def ensure_claude_md(dest: Path, force: bool):
         print("  scaffold: wrote CLAUDE.md (research-paper entry-point pointer)")
 
 
-HOOK_COMMAND = "python .claude/skills/research-skill-evolution/scripts/skill_update_trigger.py"
+HOOK_COMMAND = ("python -c \"import os,runpy;runpy.run_path(os.path.join(os.environ.get('CLAUDE_PROJECT_DIR','.'),"
+                "'.claude/skills/research-skill-evolution/scripts/skill_update_trigger.py'),run_name='__main__')\"")
+# resolved from $CLAUDE_PROJECT_DIR, never the shell cwd: a relative path blocks every prompt once a session cd-s out of the repo (2026-09-16)
 HOOK_EVENTS = {"UserPromptSubmit": "skill-evolution round counter",
                "PreCompact": "skill-evolution usage flag"}
 
