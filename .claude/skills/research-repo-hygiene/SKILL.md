@@ -15,7 +15,7 @@ The standing rules every phase follows for repo structure and process. This is a
 
 - **Plans** → back up to `docs/plans/plan-YYYYMMDD-HHMMSS.md` before executing; that backup also triggers a `research-tracking` effort+cost report.
 - **Changelog** → every change gets a dated what+why entry in `docs/changelogs.md`.
-- **Drafts** → `vNN-title.md`; **start a new draft when an effort chunk exceeds ~5 agent-active hours**; periodically move superseded drafts to the gitignored `drafts/_archive/`.
+- **Drafts** → `vNN-title.md`; **start a new draft when an effort chunk exceeds ~5 agent-active hours, and whenever a revision changes the paper's length or spine** (a compression, a reframing): the fuller version stays as the reference the owner reads against and numeric diffs run against, never overwritten in place (owner ruling 2026-09-16); periodically move superseded drafts to the gitignored `drafts/_archive/`.
 - **README/architecture** → updated less often, but kept accurate; `architecture.md` also holds the Phase-1 project charter.
 - **Commits** → by **feature, not hours**; **commit when the user changes subject**; **auto-push**; **PR to main only on explicit request**; **no co-author/generated-by footer**. Use a `research/<paper-slug>/<feature>` branch in the monorepo, never the shared default branch directly.
 - **Tests** → ship with all new code, tracked and committed, and **must pass after major changes** (enforced by `research-code-review`).
