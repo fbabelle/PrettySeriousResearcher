@@ -9,7 +9,7 @@ The `research-mock-review` packet ends with the user's submit decision — this 
 
 ## The arXiv v1 cut point
 
-Define the first preprint as **the current draft plus three cheap passes and nothing new**: the mock-review packet with only the top hard defects fixed, the title reconciled with the paper's spine, and the language pass; every remaining free analysis that fits goes in, every new experiment (a second market, a paid re-run, a heavier robustness study) is v2 material. Name the cut point to the owner as a list of the passes still owed, with the one decision (the title) they must make, and check the target venue's preprint policy once before posting (earned 2026-09-18).
+Define the first preprint as **the current draft plus three cheap passes and nothing new**: the mock-review packet with only the top hard defects fixed, the title reconciled with the paper's spine, and the language pass; every remaining free analysis that fits goes in, every new experiment (a second market, a paid re-run, a heavier robustness study) is v2 material. Name the cut point to the owner as a list of the passes still owed, with the one decision (the title) they must make, and check the target venue's preprint policy once before posting (earned 2026-09-18). **What stays out of the preprint is the owner's call, but the AI-involvement statement stays in:** when the owner drops the reproducibility appendix (no artefact address yet), keep the disclosure as one unnumbered paragraph before the references and say plainly that recordings and code are not part of the preprint; the venue policies that welcome disclosure punish its absence (earned 2026-09-19).
 
 ## Ground rules
 
