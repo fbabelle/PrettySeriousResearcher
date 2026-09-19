@@ -17,8 +17,10 @@ Depth lives in the references; this file is the *what-to-use* and *when*:
 1. **One source of truth, generated from code/markup**, version-controlled — never a screenshot or a hand-pasted bitmap.
 2. **Vector output** (PDF/SVG) for anything made of lines/text/marks; raster only for true photos at ≥300 dpi.
 3. **One shared style** so the whole paper looks uniform — charts load `scripts/pub.mplstyle` (matplotlib route) or the studio's `theme.css` (browser route): one font, one size set, the colourblind-safe Okabe-Ito palette.
-4. **Captions, numbering, and titles belong to the document** (the typesetter's float + `\caption` + `\label`), **never baked into the image** — no titles, footers, or provenance/debug strings inside a figure.
+4. **Captions, numbering, and titles belong to the document** (the typesetter's float + `\caption` + `\label`), **never baked into the image** — no titles, footers, or provenance/debug strings inside a figure. Text inside a figure follows one case rule: phrases (axis labels, legend entries, panel titles, node names) in Title Case, full sentences and notes in sentence case and upright, never italic; confirm against the venue's style and put it in the shared label maps so every figure script inherits it (owner rule 2026-09-16 and 2026-09-18).
 5. **Chart data is derived and asserted, never hand-typed.** Every series comes out of `runs/` artifacts through a prep script that **asserts** the derived numbers reproduce the paper's published tables within tolerance — a failed assert means figure and table have diverged. This is `research-provenance` made executable at the figure level.
+
+**A table that justifies a mechanism carries the row that motivated it, and explains rows that coincide.** A sweep over execution variants read as noise until the naive baseline (the daily book whose cost erosion started the whole layer) was added as the first row — the reader then sees erosion → recovery → variants in one table. And when two rows are identical by construction (calibrate-once picked the monthly calendar on the campaign's first day = fixed monthly), say so in the caption or a note, or the owner reads it as a computation bug; print enough decimals that near-identical rows are distinguishable (earned 2026-09-12).
 
 ## Decision matrix (visual type → tool → format)
 
