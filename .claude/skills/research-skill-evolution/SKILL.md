@@ -76,6 +76,12 @@ shell-agnostic form is
   particular estimator, a particular index or dataset, a particular venue's date),
   reconsider — the general form of the lesson is what belongs ("verify track-level
   desk-reject rules", not "venue X rejected us").
+- **A rule earned from one owner ruling is a default, not a must.** When the lesson
+  comes from a single ruling made in the same session (what stays in a preprint, which
+  address to print, which appendix to keep), write it as "offer X once; the owner
+  decides" and name where the dropped item is recorded so it can return. A ruling the
+  owner has not yet seen rendered is provisional; the next round often reverses it, and
+  a "must" written from it has to be rewritten (earned 2026-09-19, pass 43 → 44).
 - **Bounded cost.** One pass ≈ one focused turn. If the increment is huge (e.g. first
   run), cap at the ~5–8 highest-value lessons and note the cut in the log.
 
