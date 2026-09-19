@@ -7,6 +7,10 @@ description: Post-packet tail — execute the submission (portal checklist, anon
 
 The `research-mock-review` packet ends with the user's submit decision — this skill owns everything **after** it: executing the submission, the review cycle, camera-ready, and release. Production papers spend real effort here (multi-edition builds, supplements, response passes); an unmanaged tail loses an accepted-quality paper to a missed form, a broken anonymization, or a sloppy rebuttal.
 
+## The arXiv v1 cut point
+
+Define the first preprint as **the current draft plus three cheap passes and nothing new**: the mock-review packet with only the top hard defects fixed, the title reconciled with the paper's spine, and the language pass; every remaining free analysis that fits goes in, every new experiment (a second market, a paid re-run, a heavier robustness study) is v2 material. Name the cut point to the owner as a list of the passes still owed, with the one decision (the title) they must make, and check the target venue's preprint policy once before posting (earned 2026-09-18).
+
 ## Ground rules
 
 - **Everything outward-facing is user-confirmed before it leaves.** The agent stages, verifies, and drafts; the user uploads, clicks, and sends. A submission, an arXiv post, and a rebuttal are all irreversible publications — the same autonomy inversion as `research-mock-review`.
