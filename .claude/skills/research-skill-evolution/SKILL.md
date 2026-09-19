@@ -17,7 +17,13 @@ Fired by this skill's own hook script, `scripts/skill_update_trigger.py`, regist
 `--with-scaffold` writes or merges that registration; the script's docstring carries the
 snippet for a manual setup): every 10 user prompts since the last update, or on the first
 prompt after PreCompact (context nearly exhausted). Hooks are a Claude Code feature — on
-other hosts, invoke this skill by hand at the same cadence. State:
+other hosts, invoke this skill by hand at the same cadence. **The registered command must
+resolve the script from `$CLAUDE_PROJECT_DIR`, never from a path relative to the shell's
+cwd:** hooks run in the session's current directory, the Bash tool's `cd` persists between
+calls, and a session whose shell has left the repo then has every prompt blocked (background
+completion notices and the owner's messages alike) and looks stalled (earned 2026-09-16). A
+shell-agnostic form is
+`python -c "import os,runpy;runpy.run_path(os.path.join(os.environ.get('CLAUDE_PROJECT_DIR','.'),'.claude/skills/research-skill-evolution/scripts/skill_update_trigger.py'),run_name='__main__')"`. State:
 `docs/tracking/.skill-evolution-state.json` (git-ignored) — `round_count`,
 `last_update_round`, `last_update_commit`, `last_update_time`, `pending_usage_trigger`.
 
