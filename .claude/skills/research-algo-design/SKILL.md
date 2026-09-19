@@ -64,6 +64,10 @@ Chosen approach implemented and tested; baselines defined; ablation variants ide
 
 When an experiment needs to price decisions (regret vs an oracle, after-cost value of an intervention) but the phenomenon lives outside the simulation engine (e.g. data faults the market simulator does not model), do not bolt it into the engine first: write a **transparent economic model** — a stated constants table (lags, costs, return horizons) mapping true state × action → value over a horizon — whose oracle is the argmax by construction and is unit-tested, and get common random numbers by showing the *identical* episode to every arm. The engine-embedded, branched-rollout version is a later upgrade for the headline experiment, recorded as an amendment in the design doc rather than a silent substitution (earned: probe-environment build, 2026-09-01).
 
+## Adaptive mechanisms: propose them with their dangers quantified
+
+When the owner (or you) wants a parameter to adapt online (a holding period, a threshold, a window), answer with the danger list *and its magnitudes on this data*: the estimation noise of the trailing window vs the effect size between neighbouring settings (if noise ≫ effect, the mechanism chases noise), the reaction lag (window + cool-down), the parameters the mechanism itself introduces (fix them a priori), the degrees of freedom it adds to the evaluation, and how it interacts with the governing layer (it must never override the referee). Then state the honest expectation — usually "more robust, not more profitable": insurance against being stuck in a wrong setting after a regime shift, paid for with lag — and test it on the pre-stated forward period (2026-09-12).
+
 ## Cross-references
 
 - **research-paper** — orchestrator; enforces the solvability gate (loop-back to reflection on failure) and the budget gate.
