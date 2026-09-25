@@ -20,13 +20,26 @@ Use the host agent's current web-search and page-fetch tools for current venue r
 
 The skill set's default is an **arXiv-first main draft** (`research-writing`). That can collide with a target venue that is **double-blind** or has a **preprint policy** — posting to arXiv first may break anonymity or violate dual-submission rules. Surface this conflict **in the early venue profile** as an explicit user decision (arXiv-now-and-pick-a-preprint-friendly-venue, vs hold-the-preprint-for-a-double-blind-target), so the early venue push doesn't silently undermine the arXiv-first writing default. Record the resolution in the venue profile.
 
-## The four axes (score every candidate on these)
+## The six axes (score every candidate on these)
 
 1. **Topic & domain fit.** Map the paper's *contribution type* to the venues that publish it: an AI **method** paper, a **benchmark/survey**, an **AI×finance** bridge, and an **empirical finance** study go to different places. A finance-leaning ML paper has *two* tracks (ML conferences **and** finance journals) — name both; they have very different norms, lengths, and timelines.
 2. **Rank & prestige (use the field's standard, not vibes).** CS: **CORE** (A*/A/B), **CCF** (A/B/C), Google Scholar **h5-index**, acceptance rate. Finance/econ: **ABS/AJG** (4*/4/3), **FT50**, impact factor, the "top-3" (JF/JFE/RFS) convention. Always state the ranking *source and year*.
 3. **Timeline, order & priority.** Order candidates by **submission deadline vs the estimated finishing date** and **review-period length**; set a **priority chain** — aim highest fit×rank first, with realistic fallbacks down the chain. A venue whose deadline can't be met this cycle isn't dropped — log it with its *next* cycle. Conferences are deadline-driven (miss it, wait a year); journals are rolling (submit anytime, longer reviews) — weigh accordingly.
 4. **Preparation & cost.** Per candidate: **prerequisites** (page/column limit, template/`.cls`, anonymization for double-blind, artifact/ethics/reproducibility checklist, **the venue's LLM/AI-use policy** — disclosure requirements and what AI authorship it permits, now a per-venue variable — dual-submission/preprint policy vs an arXiv post), **fees** (submission fee / APC — **record into cost tracking**), **review-period length** (to project the decision date), and **both deadlines** (soft = abstract/registration, hard = full paper).
 5. **Track-level eligibility (read the CFP text, not just the dates).** Applied/industry tracks can have **hard desk-reject rules** that invalidate a whole paper *shape* — e.g. requiring live post-launch deployment evidence and explicitly rejecting offline-on-real-data studies. Verify the eligibility language of the *specific track* from the official CFP during the **early** run: an eligibility mismatch discovered late means the paper was framed for a venue that will never review it. Also record **all submission cycles** (some venues run two per year) — a cycle can pass mid-project, and "the next deadline" must be re-derived from the official page at every phase boundary, never assumed from last year's pattern.
+
+6. **Desk-triage survival (often the deciding axis for a journal).** Most journal rejections of long benchmark / evaluation-methodology papers from unaffiliated authors happen *without review*, and a desk reject returns no feedback. Score each candidate on:
+   - **Length vs the venue's norm** — measure the median typeset length of 5 recent papers; a draft above ~1.5× that median is a triage risk regardless of quality (earned 2026-09: a ~19k-word draft, 76 pages double-spaced, drew two desk rejects).
+   - **Contribution-type recognition** — a benchmark / evaluation paper reads as "no main economic result" to a finance editor and as "no new method" to an ML editor. Prefer venues whose editors publish that type (benchmark tracks, applied-AI systems journals, data-science-in-finance journals), or reframe the title and first abstract sentences to lead with a *finding*.
+   - **Author signal** — unaffiliated authors are triaged more strictly; the cover letter must carry the credibility signals (preprint, public artifacts, human study, prior venue feedback) that an affiliation would otherwise supply.
+   - **Editor-persona probability** from `research-mock-review` multi-venue mode — run it on the actual draft for every candidate before ordering the chain.
+   Where the journal permits it, send a **pre-submission enquiry** to the editor (abstract + three-sentence contribution + length): it costs days, a blind submission that dies at triage costs 4–6 weeks.
+
+**Exclusivity is universal.** Practically every archival journal forbids submitting a manuscript that is under consideration elsewhere — verify and quote the policy for each candidate, but plan on it: the chain is strictly **sequential**, one venue at a time, and a preprint does not count as a submission. The choice between two rungs is therefore an ordering decision, not a parallel bet; order by (triage survival × fit) first, then time-to-decision, then rank.
+
+**Publisher "transfer desk" offers after a rejection** are automated recommendations biased toward the publisher's own APC-charging open-access titles. Treat them as leads, not editorial endorsements: check the fee and *when* it is due (APC on acceptance vs a submission fee), the scope, and the ranking source before letting one jump the chain — and keep the user's cost preference (e.g. free-first) as the filter.
+
+**After two consecutive desk rejects, stop and re-plan** — `research-reflection` on framing/length, then the mock-review editor pass on every remaining candidate — before spending another cycle on the next rung.
 
 See [references/venue-landscape.md](references/venue-landscape.md) for the ranking systems, the AI / finance / AI×finance venue map, preprint-vs-double-blind cautions, and typical fee ranges.
 
@@ -35,7 +48,7 @@ See [references/venue-landscape.md](references/venue-landscape.md) for the ranki
 A ranked table the user can act on, plus a short recommendation:
 
 ```
-| Venue | Type (conf/journal) | Fit | Rank (source, yr) | Soft deadline | Hard deadline | Review period | Fee (→cost) | Key prereqs | Priority |
+| Venue | Type (conf/journal) | Fit | Rank (source, yr) | Triage survival (mock editor %) | Soft deadline | Hard deadline | Review period | Fee (→cost, when due) | Key prereqs | Priority |
 ```
 
 Then a 2–4 sentence narrative: the recommended **primary target** and the **fallback chain**, and the **single binding deadline to act on next**. Stamp an `as_of` date and the CFP links the rows came from. Keep it current — re-verify before relying on a row.
@@ -48,7 +61,7 @@ A submission fee / APC is a real project expense. When a venue is chosen (or to 
 
 - **research-paper** — orchestrator; fires this **early** (Phase 1, venue profile) and **late** (Phase 3/4, deadline lock), and records the chosen target so writing aims at it.
 - **research-topic-selection** — consumes the early venue profile as a scored **venue-fit** angle; the topic is chosen partly for venue fit (venue-as-input).
-- **research-mock-review** — scores the draft against the venue rubric + numeric bar this skill's profile supplies.
+- **research-mock-review** — scores the draft against the venue rubric + numeric bar this skill's profile supplies; its multi-venue **editor pass** supplies the triage-survival column.
 - **research-tracking** — supplies the **estimated finishing date** that triggers the late run; records the **publication fee** as a `publication` cost line.
 - **research-writing** — builds the **short version** to the venue + rules this skill confirms (limit, template, format/syntax, disclosure); the main draft stays the arXiv version (subject to the arXiv-vs-double-blind reconciliation above).
 - **research-reflection** — re-evaluate the venue choice at boundaries or if the timeline slips (is the target still the best fit×rank×timing?).
