@@ -118,10 +118,10 @@ If the results are **null/negative**, the pipeline does not force a win — you 
 | Gate | Skill | What it makes impossible to ship |
 |---|---|---|
 | 📚 Citations | `research-references` | A reference that cannot be resolved or does not support the claim; missing canonical/current/contradictory coverage; corrected, superseded, or retracted status ignored. |
-| 🔢 Results | `research-provenance` | A number, table cell, or figure that doesn't trace to a logged `runs/` artifact. Claims ledger + executable assertions (figure data must reproduce published tables). |
+| 🔢 Results | `research-provenance` | A number, table cell, or figure that doesn't trace to a logged `runs/` artifact. Claims ledger + executable assertions (figure data must reproduce published tables), then a submission-time integrity audit: headline tables re-executed from a clean checkout, no evaluation-rule violations, and a Method section that matches the code that ran. |
 | 📈 Statistics | `research-finance-rigor` | (Finance topics) A Sharpe without deflation, a backtest with leakage, an alpha that dies after costs, unlicensed/non-point-in-time data. |
 | 🖼️ Figures | `research-visuals` | Type-3 fonts, raster charts, baked-in titles, colour-unsafe palettes — a two-layer audit (script + vision review) on every figure. |
-| 🧑‍⚖️ Review | `research-mock-review` | Submitting blind: an adversarial multi-model panel scores the draft against the venue's rubric and pre-drafts rebuttals. **Never auto-decides.** |
+| 🧑‍⚖️ Review | `research-mock-review` | Submitting blind: an adversarial multi-model panel scores the draft against the venue's rubric, pre-drafts rebuttals, and drafts the experiments that would answer evidence weaknesses. One reviewer is held out of the revision loop so its score is not gamed. **Never auto-decides.** |
 | 💰 Budget | `research-tracking` | Entering experiments without a finalized spend cap; conflating subscription cost with metered API spend. |
 
 ## 🧬 Skill evolution (Claude Code)
