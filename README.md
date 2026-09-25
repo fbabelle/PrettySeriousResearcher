@@ -255,7 +255,14 @@ Ad-hoc edits, no — the set is authored and maintained in this source repo, and
 
 ## 🤝 Contributing
 
-Improvements flow **upstream-first**: fix or extend a skill *here*, run the checks, then reinstall into your paper projects. Evolution passes made inside a paper project arrive the same way — a PR of the diffed skill files, project-specific residue stripped.
+Improvements flow **upstream-first**: fix or extend a skill *here*, run the checks, then update your paper projects. Evolution passes made inside a paper project arrive the same way — a PR of the diffed skill files, project-specific residue stripped.
+
+To update projects that already have the skills installed, prefer `tools/sync_local_instances.py` over a reinstall: the installer copies the bundle *over* the destination, which deletes lessons a project has not upstreamed yet, while the sync tool three-way merges each file, keeps project-local edits, and lists what each project still owes upstream.
+
+```bash
+python tools/sync_local_instances.py            # dry run over every install found next to this repo
+python tools/sync_local_instances.py --apply    # write; conflicts are left untouched and reported (exit 1)
+```
 
 ```bash
 uv sync                                      # dev env (Python 3.12 via uv)
