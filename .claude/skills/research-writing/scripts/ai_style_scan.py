@@ -60,6 +60,10 @@ WATCH_WORDS = [
 # Technical senses of listed words, masked before matching (finance and statistics terms). A project's own
 # defined labels that collide with the lists go in an allow file (--allow-file), not here.
 ALLOW_PHRASES = ["leverage ratio", "is elevated", "elevated VIX", "robustness", "Robustness"]
+# In a LaTeX-bound source "--" is an EN dash, which is correct typography for a range (7--17, 2016--2018),
+# a pair of names (Newey--West) and a two-term compound (long--short). Only "---", "—" and a spaced " -- "
+# are the all-purpose joint the em-dash category is about, so these three forms are neutralized first.
+EN_DASH_COMPOUNDS = ["long--short", "short--long", "risk--return", "mean--variance", "bid--ask", "cross--section"]
 CONNECTIVE_OPENERS = (r"Moreover|Furthermore|Additionally|Notably|Importantly|Crucially|Critically|Interestingly|"
                       r"Ultimately|Overall|Consequently|Specifically|Conversely|In particular|Taken together|"
                       r"In sum|In summary|In essence|In short|Together, these|Put differently|Put simply")
@@ -78,7 +82,7 @@ class Cat:
 
 
 CATEGORIES: list[Cat] = [
-    Cat("em_dash", "FIX", "em dash (— or --) used as a dash", r" ?(?:—|(?<=\w)--(?=\w)) ?", 3.0),
+    Cat("em_dash", "FIX", "em dash (—, --- or --) used as a joint", r" ?(?:—|---|(?<=\w)--(?=\w)|(?<=\s)--(?=\s)) ?", 3.0),
     Cat("spaced_en_dash", "WATCH", "spaced en dash used as a dash (Elsevier house style)", r" – ", 3.0),
     Cat("arrow_prose", "FIX", "arrow character in running prose", r"[→⇒⟵⟶←↔⇐⇔➔➜]", 0.0),
     Cat("ellipsis_char", "FIX", "ellipsis character (…) in prose", r"…", 0.0),
@@ -98,11 +102,15 @@ CATEGORIES: list[Cat] = [
 BY_KEY = {c.key: c for c in CATEGORIES}
 
 
+RAW_ENV = r"(tikzpicture|center|figure|table|tabular|adjustbox|algorithm|algorithmic|minipage|equation|align)"
+
+
 def prose_of(text: str, allow: list[str] | None = None) -> list[tuple[int, str]]:
-    """(line_no, masked_line) for prose lines only. Tables, code, display math, images, comments, the
-    References section and ATX headings are dropped; inline math/code and allowed phrases masked with spaces."""
+    """(line_no, masked_line) for prose lines only. Tables, code, display math, images, comments, raw
+    LaTeX blocks and command lines, the References section and ATX headings are dropped; inline
+    math/code, citation groups, cross-references, en dashes and allowed phrases masked with spaces."""
     allow = ALLOW_PHRASES if allow is None else allow
-    out, in_code, in_refs, in_math = [], False, False, False
+    out, in_code, in_refs, in_math, env_depth = [], False, False, False, 0
     for i, ln in enumerate(text.replace("\r\n", "\n").split("\n"), 1):
         s = ln.strip()
         if s.startswith("```"):
@@ -112,17 +120,35 @@ def prose_of(text: str, allow: list[str] | None = None) -> list[tuple[int, str]]
             if s == "$$" or not s.endswith("$$") or len(s) == 2:
                 in_math = not in_math
             continue
-        if in_code or in_math:
+        # raw LaTeX passed through pandoc: a tikzpicture's \draw lines end in ";" and its node text is
+        # markup, not prose. Depth-counted because these environments nest (center > tikzpicture).
+        if re.match(r"\\begin\{" + RAW_ENV, s):
+            env_depth += 1
+            continue
+        if re.match(r"\\end\{" + RAW_ENV, s):
+            env_depth = max(0, env_depth - 1)
+            continue
+        if in_code or in_math or env_depth:
             continue
         if s.startswith("#"):
             in_refs = bool(re.match(r"#+\s*References\b", s))
             continue
-        if in_refs or not s or s.startswith("|") or s.startswith("![](") or s.startswith("<!--"):
+        # a line of exactly "---" is a YAML front-matter fence or a horizontal rule, never prose
+        if in_refs or not s or s == "---" or s.startswith("|") or s.startswith("![](") or s.startswith("<!--") or s.startswith("\\"):
             continue
-        masked = re.sub(r"\$[^$\n]+\$", lambda m: " " * len(m.group(0)), ln)
+        # en dashes first, on the raw line: a range written as $0.49$--$0.69$ loses its digits once the
+        # inline math is blanked, and would then read as a spaced joint
+        masked = re.sub(r"(?<=\d)--(?=\d)|(?<=\$)--(?=\$)", "  ", ln)                      # 7--17, $0.49$--$0.69$
+        masked = re.sub(r"\b([A-Z][A-Za-z'’]+)--(?=[A-Z][A-Za-z'’]+\b)", r"\1  ", masked)  # Newey--West
+        for compound in EN_DASH_COMPOUNDS:
+            masked = masked.replace(compound, compound.replace("--", "  "))
+        masked = re.sub(r"\$[^$\n]+\$", lambda m: " " * len(m.group(0)), masked)
         masked = re.sub(r"`[^`\n]+`", lambda m: " " * len(m.group(0)), masked)
         # (Author Year; Author Year) groups: their semicolons and dashes are bibliographic, not prose
         masked = re.sub(r"\((?:[^()]*?\b(?:19|20)\d{2}[a-z]?)[^()]*\)", lambda m: " " * len(m.group(0)), masked)
+        # pandoc's [@key1; @key2] form of the same thing, and \ref{}/\S\ref{} cross-references
+        masked = re.sub(r"\[@[^\]]*\]", lambda m: " " * len(m.group(0)), masked)
+        masked = re.sub(r"\\(?:S?ref|eqref|cref|Cref|autoref)\{[^}]*\}", lambda m: " " * len(m.group(0)), masked)
         for phrase in allow:
             masked = masked.replace(phrase, " " * len(phrase))
         out.append((i, masked))
