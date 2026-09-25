@@ -60,10 +60,18 @@ shell-agnostic form is
    `pending_usage_trigger = false`, `last_update_time = now`.
 7. **Commit** the skill edits + log as one feature commit ("Skill evolution: <n> lessons
    from <span>").
-8. **Sync upstream.** If the skill set has a source project, open a PR there with the
-   diffed skill files (its contract tests and secrets/abs-path lint must pass; strip any
-   project-specific residue first). Unsynced evolution edits are clobbered by the next
-   reinstall.
+8. **Sync upstream — and treat every sync as two-way.** If the skill set has a source
+   project, open a PR there with the diffed skill files (its contract tests and
+   secrets/abs-path lint must pass; strip project-specific residue first — **a script's
+   default input/output paths are residue the abs-path lint does not catch**, so a script
+   promoted out of one project must take those paths as arguments rather than default to
+   that project's folders). Unsynced evolution edits are clobbered by the next reinstall,
+   and the reinstall is itself the danger: the installer copies the source bundle *over*
+   the destination. Before reinstalling, diff both trees and confirm per changed file that
+   the source is a genuine superset — at word level, not by substring, since an upstream
+   rewrite that extends a sentence fails a substring check while a real deletion hides
+   inside a changed line. Whatever the destination holds alone is drift owed an upstream
+   PR, never something to overwrite (earned 2026-09-19).
 
 ## Guardrails
 
