@@ -44,7 +44,7 @@ cross-cutting: research-tracking (effort+cost ledgers, two time clocks, budget p
 1. **Two-direction interview + early venue profile** (start of Phase 1) — confirm scope; the venue becomes a topic input (venue-as-input).
 2. **Topic slate** (end of Phase 1) — the ranked, multi-angle candidate slate; the user chooses or injects their own framing.
 3. **Budget-finalization gate** (entry to Phase 3) — `cost.json.status` must be `finalized` first.
-4. **Pre-submission packet** (Phase-4 exit) — `research-mock-review` score-vs-bar + ranked weaknesses + drafted rebuttals + bundled citation/visual/provenance audits; the user decides submit-or-revise. Never auto-decided.
+4. **Pre-submission packet** (Phase-4 exit) — `research-mock-review` score-vs-bar (held-out reviewer after any revision round) + ranked weaknesses + drafted rebuttals and experiment plans + bundled citation/visual/provenance audits, including the provenance integrity audit (clean-checkout re-execution, specification compliance, method-code alignment); the user decides submit-or-revise. Never auto-decided.
 5. **Reflection confirmations** — propose, act on confirmation.
 
 At every gate the agent does the diagnosis first and presents a pre-ranked, pre-critiqued artifact with a one-line spend echo; two-tier triage escalates only the shortlist + genuine cross-model disagreements — so the gates *reduce* the user's review time (the resource the effort clock tracks) rather than multiplying touchpoints.
@@ -62,6 +62,7 @@ Recorded so the decision trail is explicit — these were evaluated against the 
 - **Cross-run / cross-paper memory** (an AgentRxiv-style shared preprint/results store, or a SciAgents-style concept knowledge graph). Measured gains exist across *many* runs, but it's infra-heavy and yields nothing for a single paper. **Revisit trigger:** once ~2–3 papers exist to compound across. Until then, `research-references`' single-paper in-context evidence ledger covers the need.
 - **Full best-first agentic experiment tree search** (AI-Scientist-v2). We take only the bounded pieces (capped self-debug + best-config buffer); a full search fights the confirm surface and doesn't fit the data/leakage/cost-bound AI×finance regime.
 - **A shared finance-data auto-loader.** Data acquisition stays a deliberate per-paper step under `research-finance-rigor`'s licensing/point-in-time/survivorship checkpoint, not a one-line public-hub load.
+- **ScientistTwo's fully autonomous loop** (Google Cloud AI Research + Waterloo, arXiv:2609.19644, 2026-09). Adopted in bounded form: the SOTA limitation inventory, slice-first screening with drop/scale/engineer verdicts and stated caps, reproduced baselines, keep-the-incumbent refinement, experiment-backed rebuttals, a held-out reviewer, and the four-check integrity audit. Not adopted: the meta-reviewer's autonomous accept decision, a target score to revise toward (its own data show the in-loop reviewer being gamed), and idea evolution on the reported benchmark without trial counting. Mapping and reasons: `docs/benchmarks/scientisttwo-2026-09.md`.
 
 Other deliberate non-adoptions (auto-accept/reject decisioning, manual-labor checkpoints, open-ended clarifying questions, majority-vote citations, uncalibrated LLM-judges, compute-heavy Elo, pricing subscription tokens as spend) are recorded in the maintainers' internal changelog.
 

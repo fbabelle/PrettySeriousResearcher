@@ -16,7 +16,7 @@ LLM-authored papers invent plausible-looking **numbers** the same way they inven
 ## When it fires
 
 - **At results-capture (Phase 3)** — as `research-experiments` persists outputs, reconcile each headline number to its producing run so provenance is captured while the run context is fresh.
-- **At the Phase-4 exit** — a full sweep of the draft: every table cell, every in-text statistic, every figure traces back, or it is flagged.
+- **At the Phase-4 exit** — a full sweep of the draft: every table cell, every in-text statistic, every figure traces back, or it is flagged; then the four-check **integrity audit** below.
 - Its output is a **required input to the `research-mock-review` packet**.
 
 ## The protocol
@@ -55,6 +55,15 @@ Thresholds and conversion factors that the method section *derives* (a break-eve
 ## A design change silently re-aims the existing reports
 
 When the construction under measurement changes (a shared schedule becomes per-unit, a pooled book becomes per-unit books), walk every derived series and ask *what days / units does this actually sample now*. A per-family attribution that recorded returns on rebalance days was interpretable while every unit rebalanced together; once each unit had its own calendar the same code sampled only that family's formation days and every number turned negative — a reading that would have gone into the paper as a finding. The signature is a table that suddenly disagrees with a quantity you trust (here the ledger, accrued every held day). Suppress or re-derive the affected section, say in the report why, and prefer the series with the denominator you can state in one sentence (2026-09-13).
+
+## The integrity audit at the Phase-4 exit (tracing is not re-running)
+
+A number that resolves to a `runs/` artefact proves the artefact exists, not that the committed code still produces it or that the paper describes that code. The Chain-of-Evidence audit used by ScientistOne and ScientistTwo (arXiv:2605.26340; arXiv:2609.19644, Table 7) checks four things, and its numbers show where generated papers actually fail: without the dedicated repair agents, **11 of 50 papers described code that did something else**, 1 of 50 broke the task specification, and 19 of 1,840 references were hallucinated. Run all four on the submission candidate and file the result in the packet:
+
+1. **Score re-execution.** From a clean checkout of the tagged commit, run the one-command reproduction of every headline table and compare with the published cells within a stated tolerance. LLM cells replay from the recordings (`research-experiments`); a paid cell too expensive to re-run is covered by its replay receipt plus one sampled live re-run declared in advance. A mismatch is STALE until it is explained.
+2. **Specification compliance (reward hacking).** The evaluation script and data hashes equal the frozen ones; no code path that produced a reported cell reads the test or holdout partition, redefines a metric, or special-cases an evaluation input; the task's stated rules (budget, allowed data, horizon) hold in the code as run.
+3. **Reference verification** — delegated to `research-references` (no UNVERIFIABLE rows).
+4. **Method-code alignment.** A fresh-context reader from a model family that did not write the paper gets the Method and Setup sections plus the code paths that produced the reported cells and lists (a) every sentence the code contradicts or does not implement and (b) every choice in the code that moves a reported number but that the paper never states (a filter, a clip, a default argument, a fallback). Each item is fixed in the text or in the code, and a code fix re-opens check 1. This extends `research-code-review`'s math↔code map from the design to the finished prose, which drifts from the code during writing.
 
 ## Make provenance executable where you can
 

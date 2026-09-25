@@ -77,6 +77,33 @@ class SkillContracts(unittest.TestCase):
         ]:
             self.assertIn(term, text)
 
+    def test_scientisttwo_adoptions_are_wired(self):
+        """The rules adopted from ScientistTwo (arXiv:2609.19644) stay in their skills."""
+        def read(skill):
+            return (SKILLS / skill / "SKILL.md").read_text(encoding="utf-8")
+
+        expected = {
+            "research-topic-selection": ["limitation inventory", "reserve pool"],
+            "research-algo-design": ["Screen on a slice", "Reproduce the named SOTA", "trial"],
+            "research-experiments": ["keep the incumbent"],
+            "research-finance-rigor": ["Trials include what an agent loop tried"],
+            "research-mock-review": ["Hold one reviewer out of the revision loop", "new experiment"],
+            "research-provenance": [
+                "Score re-execution",
+                "Specification compliance",
+                "Method-code alignment",
+            ],
+            "research-paper": ["integrity audit"],
+            "research-code-review": ["integrity audit"],
+        }
+        for skill, phrases in expected.items():
+            text = read(skill)
+            for phrase in phrases:
+                self.assertIn(phrase, text, f"{skill}: {phrase}")
+        benchmark = ROOT / "docs" / "benchmarks" / "scientisttwo-2026-09.md"
+        self.assertTrue(benchmark.is_file())
+        self.assertIn("docs/benchmarks/scientisttwo-2026-09.md", (ROOT / "architecture.md").read_text(encoding="utf-8"))
+
     def test_verified_codex_path_and_current_rate_card(self):
         installer = (ROOT / "install_skills.py").read_text(encoding="utf-8")
         self.assertRegex(
