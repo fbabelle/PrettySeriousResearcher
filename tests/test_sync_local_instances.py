@@ -100,6 +100,23 @@ class Sync(unittest.TestCase):
         self.assertNotIn("CONFLICT", report)
         self.assertEqual((skills / "a" / "SKILL.md").read_text(encoding="utf-8"), local)
 
+    def test_project_copy_that_predates_an_upstreamed_file_is_a_conflict(self):
+        # b/new.md exists upstream in one version only; the project holds an older, different copy of it
+        skills = self.project("p7", V1)
+        (skills / "b").mkdir()
+        (skills / "b" / "new.md").write_text("the project's first draft of this file\n", encoding="utf-8")
+        report = self.run_sync(skills)
+        self.assertIn(".claude/skills/b/new.md", [r for r, _ in report["CONFLICT"]])
+        self.assertEqual((skills / "b" / "new.md").read_text(encoding="utf-8"), "the project's first draft of this file\n")
+
+    def test_project_copy_that_extends_the_only_upstream_version_is_ok(self):
+        skills = self.project("p8", V1)
+        (skills / "b").mkdir()
+        (skills / "b" / "new.md").write_text("new file\nplus a local line\n", encoding="utf-8")
+        report = self.run_sync(skills)
+        notes = dict(report["OK"])
+        self.assertIn("1 project-local line(s) owed upstream", notes[".claude/skills/b/new.md"])
+
     def test_crlf_files_stay_crlf(self):
         skills = self.project("p4", V1, newline="\r\n")
         self.run_sync(skills)
@@ -118,8 +135,10 @@ class Sync(unittest.TestCase):
     def test_discovery_finds_installs_but_not_the_source(self):
         p1, p2 = self.project("p1", V1), self.project("nested/p2", V1)
         found = sync_mod.find_installs([self.tmp], self.source)
-        self.assertEqual(found, sorted([p1, p2]))
+        self.assertEqual(found, sorted([p1, p2]))   # spelled as under the given root, even if it is a link
         self.assertEqual(sync_mod.skills_dir_of(self.tmp / "p1"), p1)
+        # the same directory reached through two roots is one install
+        self.assertEqual(sync_mod.find_installs([self.tmp, self.tmp / "nested"], self.source), sorted([p1, p2]))
 
 
 if __name__ == "__main__":

@@ -54,16 +54,21 @@ def line_distance(a: bytes, b: bytes) -> int:
 
 
 def find_installs(roots: list[Path], source: Path, max_depth: int = 6) -> list[Path]:
-    """Skills directories (holding research-paper/SKILL.md) under `roots`, excluding the source repo's own."""
-    found, own = [], (source / ".claude" / "skills").resolve()
+    """Skills directories (holding research-paper/SKILL.md) under `roots`, excluding the source repo's own.
+
+    Paths are returned as spelled under the given roots; resolved paths are used only to exclude the source and
+    to count one directory once. (Resolving the roots would rewrite a Windows 8.3 short name or a macOS
+    /var -> /private/var link into a spelling the caller never gave.)"""
+    own = (source / ".claude" / "skills").resolve()
+    found: dict[Path, Path] = {}
     for root in roots:
-        root = root.resolve()
         for dirpath, dirnames, _ in os.walk(root):
             depth = len(Path(dirpath).relative_to(root).parts)
             dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS and depth < max_depth]
-            if (Path(dirpath) / MARKER).is_file() and Path(dirpath).resolve() != own:
-                found.append(Path(dirpath))
-    return sorted(set(found))
+            real = Path(dirpath).resolve()
+            if (Path(dirpath) / MARKER).is_file() and real != own:
+                found.setdefault(real, Path(dirpath))
+    return sorted(found.values())
 
 
 def skills_dir_of(path: Path) -> Path:
@@ -156,6 +161,13 @@ def plan_file(source: Path, rev: str, rel: str, dst: Path) -> tuple[str, bytes |
     # base is harmless (changes both sides share merge cleanly); too new a base hides the upstream change and
     # any conflict with it, reporting "already present" for a file that never received it.
     _, _, commit, base = min((line_distance(cur, v), -i, c, v) for i, (c, v) in enumerate(versions))
+    if base == new and not contains_in_order(words([cur]), words([new])):
+        # the only usable base is upstream itself, so a merge would return the project's copy unchanged; that is
+        # right only when the project extended the upstream text. Otherwise the copy lacks upstream content: it
+        # predates the upstream text (a file or lines generalized on their way upstream: take upstream's) or the
+        # project rewrote the upstream text (owed an upstream PR). Only a reader can tell which.
+        return "CONFLICT", None, (f"no older common base (upstream {commit}) and the project's copy lacks upstream "
+                                  "content: older than upstream (take upstream's) or a local rewrite (owed upstream)")
     conflicts, merged = merge3(cur, base, new)
     if conflicts:
         return "CONFLICT", None, f"base {commit}, {conflicts} conflicting hunk(s)"
