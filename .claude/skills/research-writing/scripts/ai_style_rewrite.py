@@ -42,7 +42,10 @@ from ai_style_scan import BAN_WORDS, CONNECTIVE_OPENERS, WATCH_WORDS, scan_text 
 
 CODEX = shutil.which("codex") or "codex"
 MAX_WORDS = 1300
-SKIP_HEADINGS = ("## References", "## Abbreviations")
+SKIP_HEADINGS_RX = re.compile(r"#+\s*(References|Abbreviations)\b")
+# a YAML front-matter block is structure, not prose: its abstract is short enough to hand-edit, and a lost indent
+# or fence breaks the pandoc build
+FRONT_MATTER_RX = re.compile(r"\s*---\n.*?\n(?:---|\.\.\.)[ \t]*(?:\n|$)", re.S)
 STYLE_KEYS = ("em_dash", "semicolon", "arrow_prose", "ellipsis_char", "ban_words", "not_only", "connective_opener")
 
 PROMPT = """You are copy-editing ONE section of a finance/AI research paper (markdown, in the <stdin> block). The text is final in meaning and already correct. Your ONLY job is to remove typographic and phrasing habits that make prose read as machine-written, while changing nothing else. Work sentence by sentence; a sentence with none of the habits below is returned EXACTLY as it is.
@@ -87,13 +90,15 @@ def slug(h: str) -> str:
 
 def chunks_of(tag: str, text: str):
     text = text.replace("\r\n", "\n")
-    heads = [(m.start(), m.group(0)) for m in re.finditer(r"^## .*$", text, flags=re.M)]
+    # "# " as well as "## ": a manuscript whose sections are level-1 headings would otherwise arrive as one
+    # chunk per file, far past MAX_WORDS and past what the guard can check line by line
+    heads = [(m.start(), m.group(0)) for m in re.finditer(r"^#{1,2} .*$", text, flags=re.M)]
     if not heads or heads[0][0] > 0:
         heads.insert(0, (0, "## (front matter)"))
     heads.append((len(text), "END"))
     n = 0
     for (s, h), (e, _) in zip(heads, heads[1:]):
-        if h.startswith(SKIP_HEADINGS):
+        if SKIP_HEADINGS_RX.match(h):
             continue
         body = text[s:e]
         if len(body.split()) > MAX_WORDS:
@@ -124,8 +129,16 @@ def brief(pass_no: int, terms: list[str]) -> str:
     return PROMPTS[pass_no].replace("{TERMS}", listed)
 
 
+def editable_style_count(s: str) -> dict[str, int]:
+    """style_count over the lines the model was allowed to touch. A figure caption written inline
+    (![Caption](path){#fig:x}) is a skeleton line here, so its semicolons can never fall; holding the
+    reply to a target that counts them makes a clean chunk fail."""
+    frozen = set(skeleton(s))
+    return style_count("\n".join(ln for ln in s.replace("\r\n", "\n").split("\n") if ln not in frozen))
+
+
 def worth_sending(body: str, skip_if_contains: tuple[str, ...] = ()) -> bool:
-    if any(k in body for k in skip_if_contains):
+    if any(k in body for k in skip_if_contains) or FRONT_MATTER_RX.match(body):
         return False
     return len(body.split()) >= 30 and sum(style_count(body).values()) > 0
 
@@ -137,13 +150,16 @@ def normalize(reply: str) -> str:
 
 
 def skeleton(s: str):
+    """Lines that must come back byte-identical: headings, table rows, figure lines (with or without an
+    inline caption), fenced code, display math, and raw LaTeX (a tikzpicture's \\draw lines end in ";",
+    which the semicolon brief would otherwise invite the model to "fix")."""
     lines = s.replace("\r\n", "\n").split("\n")
     keep, in_code = [], False
     for ln in lines:
         if ln.startswith("```"):
             in_code = not in_code
             keep.append(ln)
-        elif in_code or ln.startswith("#") or ln.startswith("|") or ln.startswith("![](") or ln.startswith("$$"):
+        elif in_code or ln.startswith(("#", "|", "![", "$$", "\\")):
             keep.append(ln)
     return keep
 
@@ -154,6 +170,8 @@ def tokens(s: str) -> Counter:
         + re.findall(r"[A-Z][\w'’\-]+(?: et al\.| and [A-Z][\w'’\-]+)? \d{4}[a-z]?(?=[;)\],])", s)
         + re.findall(r"§\d+(?:\.\d+)*|Table [A-Z]?\d+|Figure [A-Z]?\d+|Appendix [A-Z]|§S-[A-Z](?:\.\w+)?|\bRQ\d|\bF\d\b|\bD\d\b", s)
         + re.findall(r"\$\$.*?\$\$|\$[^$\n]+\$", s, flags=re.S)
+        # pandoc dialect: [@key] citations, \ref{}-style cross-references, and {#tbl:x} / {#fig:y} labels
+        + re.findall(r"\[@[^\]]+\]|\\(?:S?ref|eqref|cref|Cref|autoref)\{[^}]*\}|\{#[^}\s]+", s)
     )
 
 
@@ -226,8 +244,10 @@ def guard(old: str, new: str, pass_no: int = 1) -> list[str]:
     if len(re.findall(r"(?<=\S)  +(?=\S)", new)) > len(re.findall(r"(?<=\S)  +(?=\S)", old)):
         problems.append("new double spaces")
     so, sn = style_count(old), style_count(new)
-    if pass_no == 2 and sn["semicolon"] > max(2, so["semicolon"] // 2):
-        problems.append(f"semicolons {so['semicolon']} -> {sn['semicolon']} (pass 2 target ≤ {max(2, so['semicolon'] // 2)})")
+    eo, en = editable_style_count(old), editable_style_count(new)
+    if pass_no == 2 and en["semicolon"] > max(2, eo["semicolon"] // 2):
+        problems.append(f"semicolons (editable lines) {eo['semicolon']} -> {en['semicolon']} "
+                        f"(pass 2 target ≤ {max(2, eo['semicolon'] // 2)})")
     # reverted (unanchored) groups keep their dashes, so pass 1 only requires a fall; the final scan and
     # pass 2 enforce the per-1k target on the applied text
     if sn["em_dash"] > so["em_dash"] or (pass_no == 2 and sn["em_dash"] > max(1, so["em_dash"] // 2)):

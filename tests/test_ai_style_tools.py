@@ -82,6 +82,29 @@ class Scan(unittest.TestCase):
             self.assertEqual(buf.getvalue().count(":3:"), 2)
 
 
+class LatexAndPandocDialect(unittest.TestCase):
+    def test_en_dash_forms_are_typography_not_tells(self):
+        text = "Ranges 7--17 and 2016--2018, Newey--West errors, $0.49$--$0.69$, and a long--short book.\n"
+        self.assertEqual(scan.scan_text(text)["em_dash"], [])
+
+    def test_real_joints_still_count(self):
+        text = "The gain held---as expected---and the loss -- a small one -- did too; so did the rest.\n"
+        self.assertEqual(len(scan.scan_text(text)["em_dash"]), 4)
+
+    def test_raw_latex_and_pandoc_citations_are_not_prose(self):
+        text = ("\\begin{center}\n\\begin{tikzpicture}\n\\draw (0,0) -- (1,1);\n\\node at (0,0) {a; b};\n"
+                "\\end{tikzpicture}\n\\end{center}\n\n"
+                "As shown [@smith2021; @lee2023] and in \\S\\ref{sec:a}, the result holds.\n")
+        self.assertEqual(scan.scan_text(text)["semicolon"], [])
+        self.assertEqual(scan.scan_text(text)["em_dash"], [])
+
+    def test_front_matter_fences_are_not_dashes_but_the_abstract_is_still_prose(self):
+        text = "---\ntitle: T\nabstract: |\n  We delve into the data.\n---\n\nBody text.\n"
+        hits = scan.scan_text(text)
+        self.assertEqual(hits["em_dash"], [])                                   # the two "---" fences
+        self.assertEqual([h[1].lower() for h in hits["ban_words"]], ["delve"])  # the YAML abstract is read
+
+
 class Rewrite(unittest.TestCase):
     def test_brief_freezes_the_project_terms(self):
         self.assertIn("ScoreGate, and every other defined name", rewrite.brief(1, ["ScoreGate"]))
@@ -97,6 +120,27 @@ class Rewrite(unittest.TestCase):
         old = "The gain is 0.37 — larger than before.\n"
         self.assertEqual(rewrite.guard(old, "The gain is 0.37, larger than before.\n"), [])
         self.assertTrue(rewrite.guard(old, "The gain is 0.38, larger than before.\n"))
+
+    def test_level_one_headings_split_and_references_are_skipped(self):
+        text = "# Intro\n\nFirst section text.\n\n# Method\n\nSecond section text.\n\n# References\n\nSmith 2021.\n"
+        ids = [cid for cid, _ in rewrite.chunks_of("p", text)]
+        self.assertEqual(len(ids), 2)
+        self.assertFalse(any("references" in i for i in ids))
+
+    def test_front_matter_chunk_is_never_sent(self):
+        body = "---\ntitle: X\nabstract: |\n  Our method — unlike the baseline — works.\n---\n\n" + "Our method — unlike the baseline — works. " * 10
+        self.assertFalse(rewrite.worth_sending(body))
+
+    def test_caption_and_raw_latex_lines_are_frozen_and_not_counted(self):
+        s = "![A caption; with a semicolon](fig.png){#fig:a}\n\\draw (0,0) -- (1,1);\nPlain prose here.\n"
+        self.assertIn("\\draw (0,0) -- (1,1);", rewrite.skeleton(s))
+        self.assertIn("![A caption; with a semicolon](fig.png){#fig:a}", rewrite.skeleton(s))
+        self.assertEqual(rewrite.editable_style_count(s)["semicolon"], 0)
+
+    def test_pandoc_citations_and_labels_are_protected_tokens(self):
+        toks = rewrite.tokens("See [@smith2021], \\ref{sec:a} and the table {#tbl:main}.")
+        for t in ("[@smith2021]", "\\ref{sec:a}", "{#tbl:main"):
+            self.assertIn(t, toks)
 
     def test_unanchored_edits_are_reverted(self):
         # the second edit sits well beyond GROUP_GAP and ANCHOR_WINDOW from the dash, so it is judged alone

@@ -38,6 +38,30 @@ Keep the list current: editors' guides (e.g. Wikipedia's *Signs of AI writing*, 
 evolve, and so do model habits. Update the `BAN_WORDS` / `WATCH_WORDS` lists in the scanner when a new
 tell becomes recognizable.
 
+### 1a. Check the manuscript's dialect before believing the counts
+
+A tell is a habit, not a character. The same character is a habit in one source dialect and correct
+typography in another, so read a sample of the hits before acting on a density (earned 2026-09-18: 46 of
+47 reported dash hits were correct typography and the real em-dash count was zero).
+
+| Looks like a tell | Is not one when | Why |
+|---|---|---|
+| `word--word` | the source is bound for LaTeX | `--` is the **en dash**: ranges (`7--17`, `2016--2018`, `$0.49$--$0.69$`), name pairs (`Newey--West`), two-term compounds (`long--short`). The joint is `---` or `—`, and a spaced ` -- `. |
+| `;` in `[@key1; @key2]` | the source is pandoc markdown | Bibliographic, like `(Smith 2021; Lee 2023)`. Mask both forms. |
+| `;` at the end of most lines of a block | the block is raw LaTeX | Every tikz `\draw`/`\node` statement ends in `;`. Drop `\begin{…}`/`\end{…}` environments and `\`-leading lines. |
+| `;` inside `![Caption](path){#fig:x}` and a `: Table caption` line | — | It is prose, so the **scanner** should count it, but the **rewriter** must not edit the line (it carries the path, the label and the attributes). Freeze the line and measure the rewrite's target on editable lines only. |
+| A semicolon list in a table note or a parameter caption | the items are settings, not clauses | `(cap fraction 0.5; null streams at $\mu=0$; alive streams … target 1260)` reads worse with commas: five numeric settings run together. Human authors use semicolons here. |
+| `---` on its own line | it is a YAML front-matter fence or a horizontal rule | Never prose. |
+
+Two rules follow. **Before the pass:** teach the scanner the dialect (its `prose_of` masking) rather than
+discounting the hits by hand, or every future edition re-reports them; the shipped scanner already knows
+LaTeX-bound markdown (en-dash ranges, name pairs and compounds, raw LaTeX environments, lines that open with a
+backslash) and pandoc citations and cross-references. **Before sending anything to the
+rewriter:** put whatever the model must not edit into the guard's `skeleton()` — raw LaTeX above all. The
+one chunk whose guard tripped on structure in that run had a tikz node restyled from `dat` to `gov`, which
+would have drawn the execution-layer box in the governance colour. A style pass reaches everything in the
+chunk, including the figures.
+
 ## 2. Measure
 
 ```

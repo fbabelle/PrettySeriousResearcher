@@ -33,6 +33,9 @@ class SkillContracts(unittest.TestCase):
             if ".git" in path.parts or ".pytest_cache" in path.parts:
                 continue
             text = path.read_text(encoding="utf-8")
+            # markdown shown as code (a fenced block or an inline span) renders as text, not as a link
+            text = re.sub(r"```.*?```", "", text, flags=re.S)
+            text = re.sub(r"`[^`\n]+`", "", text)
             for raw in LINK_RE.findall(text):
                 target = raw.strip().split("#", 1)[0]
                 if not target or "://" in target or target.startswith(("mailto:", "#")):
