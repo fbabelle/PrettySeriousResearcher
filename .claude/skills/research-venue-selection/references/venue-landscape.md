@@ -38,13 +38,15 @@ Match to the **estimated finishing date**: if a top conference deadline is reach
 Treat every fee as a *verify-the-current-number* item; ballparks only:
 - **ML conferences**: no submission fee, but **registration** (often required to publish) ~$X00–$1k+, plus travel.
 - **Finance journals**: **submission fees** are common (e.g. JF/JFE/RFS historically ~$100–$250) and sometimes desk-reject-and-keep.
-- **Open access / APC**: gold-OA article processing charges can be **$1k–$4k+**; many venues offer waivers.
+- **Open access / APC**: gold-OA article processing charges can be **$1k–$4k+**; many venues offer waivers. Record *when* the fee is due — most fully-OA publishers (e.g. Springer Nature) charge the APC **on editorial acceptance**, with no submission fee; hybrid journals have a **$0 subscription route** with OA optional. Some journals are sponsored by an institution that covers a yearly quota of articles — confirm the quota before relying on it.
+- **Transfer-desk recommendations** sent after a rejection are automated and skew toward the publisher's APC titles; verify scope, ranking, fee timing and any warning-list status before treating one as a rung.
 Record the chosen venue's fee in `cost.json.actuals` as `category: "publication"` (see `research-tracking`) — a separate fixed line, outside the experiments cap.
 
 ## Disclosure & preprint cautions
 
 - **Double-blind**: most ML venues. Anonymize the submission (no author names, no self-revealing links/acknowledgements); check the venue's preprint policy — many allow an arXiv post but some restrict citing/advertising it near the deadline (de-anonymization risk).
-- **Dual-submission**: simultaneous submission to two archival venues is forbidden almost everywhere — the priority chain is *sequential*, not parallel.
+- **Dual-submission**: simultaneous submission to two archival venues is forbidden almost everywhere (journals state it as "not under consideration elsewhere") — the priority chain is *sequential*, not parallel; a preprint is not a submission.
+- **Desk rejection**: the dominant rejection mode for journals; it returns no reviews. Signals editors triage on — length vs the journal's median, whether the contribution type matches the venue, whether the finding is visible in the title/first abstract sentences, author/affiliation signal, presentation. See the desk-triage axis in the skill and the editor pass in `research-mock-review`.
 - **Ethics / artifact / reproducibility**: NeurIPS-style checklists, artifact-evaluation tracks, data/ethics statements — these are prerequisites, not afterthoughts; budget time for them.
 
 Cross-checks: the **IP mask-the-recipe-never-the-evidence** rule for what's posted publicly lives in `research-writing` (short-version-guide); recency/verification discipline mirrors `research-references`.
